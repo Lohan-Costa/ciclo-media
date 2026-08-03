@@ -1,0 +1,37 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+import type { Lang } from '../i18n/utils';
+
+interface Props {
+	lang: Lang;
+	title: string;
+	description: string;
+}
+
+const { lang, title, description } = Astro.props;
+
+// Path with the locale prefix stripped, used to build the language switcher links.
+const rawPath = Astro.url.pathname;
+const path = lang === 'en' ? rawPath.replace(/^\/en/, '') || '/' : rawPath;
+---
+
+<!doctype html>
+<html lang={lang}>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+	</head>
+	<body>
+		<Header lang={lang} path={path} />
+		<main>
+			<slot />
+		</main>
+		<Footer lang={lang} />
+	</body>
+</html>

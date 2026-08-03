@@ -1,0 +1,23 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import LangSwitcher from './LangSwitcher.astro';
+import { useTranslations, type Lang } from '../i18n/utils';
+
+interface Props {
+	lang: Lang;
+	path: string;
+}
+
+const { lang, path } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<header class="site-header">
+	<div class="wrap">
+		<a class="brand" href={getRelativeLocaleUrl(lang, '/')}>
+			<img src="/images/logo.svg" alt="" width="28" height="28" />
+			{t('site.title')}
+		</a>
+		<LangSwitcher lang={lang} path={path} />
+	</div>
+</header>

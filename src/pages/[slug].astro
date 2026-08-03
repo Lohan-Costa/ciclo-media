@@ -1,0 +1,21 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AppPage from '../components/AppPage.astro';
+import { apps } from '../data/apps';
+import { useTranslations } from '../i18n/utils';
+
+export function getStaticPaths() {
+	return apps.map((app) => ({
+		params: { slug: app.slug },
+		props: { app },
+	}));
+}
+
+const lang = 'pt' as const;
+const { app } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<Layout lang={lang} title={`${app.name} — ${t('site.title')}`} description={app.tagline[lang]}>
+	<AppPage app={app} lang={lang} />
+</Layout>

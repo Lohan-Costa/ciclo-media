@@ -1,0 +1,20 @@
+---
+import { useTranslations, type Lang } from '../i18n/utils';
+
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+	<div class="wrap">
+		<span>&copy; {year} {t('footer.madeby')}</span>
+		<a href="https://github.com/Lohan-Costa" target="_blank" rel="noopener noreferrer">
+			{t('footer.github')}
+		</a>
+	</div>
+</footer>

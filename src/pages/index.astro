@@ -1,0 +1,21 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AppCard from '../components/AppCard.astro';
+import { apps } from '../data/apps';
+import { useTranslations } from '../i18n/utils';
+
+const lang = 'pt' as const;
+const t = useTranslations(lang);
+---
+
+<Layout lang={lang} title={`${t('site.title')} — ${t('home.heading')}`} description={t('home.subheading')}>
+	<div class="wrap">
+		<section class="hero">
+			<h1>{t('home.heading')}</h1>
+			<p>{t('home.subheading')}</p>
+		</section>
+		<section class="app-grid">
+			{apps.map((app) => <AppCard app={app} lang={lang} />)}
+		</section>
+	</div>
+</Layout>

@@ -1,0 +1,22 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import type { AppEntry } from '../data/apps';
+import { useTranslations, type Lang } from '../i18n/utils';
+
+interface Props {
+	app: AppEntry;
+	lang: Lang;
+}
+
+const { app, lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<a class="app-card" href={getRelativeLocaleUrl(lang, `/${app.slug}`)}>
+	<h2>
+		{app.name}
+		{app.status && <span class="badge">{t(`app.status.${app.status}`)}</span>}
+	</h2>
+	<p>{app.tagline[lang]}</p>
+	<span class="cta">{t('home.card.viewmore')} →</span>
+</a>

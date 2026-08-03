@@ -1,0 +1,101 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import type { AppEntry } from '../data/apps';
+import { useTranslations, type Lang } from '../i18n/utils';
+
+interface Props {
+	app: AppEntry;
+	lang: Lang;
+}
+
+const { app, lang } = Astro.props;
+const t = useTranslations(lang);
+const repoUrl = `https://github.com/${app.repoOwner}/${app.repoName}`;
+---
+
+<div class="wrap">
+	<a class="back-link" href={getRelativeLocaleUrl(lang, '/')}>← {t('app.back')}</a>
+
+	<div class="app-header">
+		<a class="source-link" href={repoUrl} target="_blank" rel="noopener noreferrer">
+			{t('app.viewsource')} →
+		</a>
+		<h1>
+			{app.name}
+			{app.status && <span class="badge">{t(`app.status.${app.status}`)}</span>}
+		</h1>
+		<p class="tagline">{app.tagline[lang]}</p>
+		<p class="app-description">{app.description[lang]}</p>
+	</div>
+
+	{
+		app.kind === 'desktop' ? (
+			<div class="download-box" data-repo-owner={app.repoOwner} data-repo-name={app.repoName}>
+				<h2>{t('app.download.heading')}</h2>
+				<div class="download-buttons">
+					<a class="btn primary" data-os="mac" href={`${repoUrl}/releases/latest`}>
+						<span>{t('app.download.mac')}</span>
+					</a>
+					<a class="btn" data-os="windows" href={`${repoUrl}/releases/latest`}>
+						<span>{t('app.download.windows')}</span>
+					</a>
+				</div>
+				<p class="download-status" data-status>{t('app.download.loading')}</p>
+			</div>
+		) : (
+			<div class="download-box">
+				<h2>{t('app.opentool.button')}</h2>
+				<div class="download-buttons">
+					<a class="btn primary" href={app.webUrl} target="_blank" rel="noopener noreferrer">
+						<span>{t('app.opentool.button')}</span>
+					</a>
+				</div>
+				<p class="download-status">{t('app.opentool.desc')}</p>
+			</div>
+		)
+	}
+</div>
+
+{
+	app.kind === 'desktop' && (
+		<script define:vars={{ owner: app.repoOwner, repo: app.repoName, viewAllText: t('app.download.viewall'), errorText: t('app.download.error'), versionLabel: t('app.download.version') }}>
+			(async () => {
+				const box = document.querySelector('.download-box[data-repo-owner]');
+				if (!box) return;
+				const statusEl = box.querySelector('[data-status]');
+				const macBtn = box.querySelector('[data-os="mac"]');
+				const winBtn = box.querySelector('[data-os="windows"]');
+				const releasesUrl = `https://github.com/${owner}/${repo}/releases`;
+
+				try {
+					const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases/latest`);
+					if (!res.ok) throw new Error('bad response');
+					const release = await res.json();
+					const assets = release.assets || [];
+
+					const macAsset =
+						assets.find((a) => /installer\.dmg$/i.test(a.name)) ||
+						assets.find((a) => /\.dmg$/i.test(a.name));
+					const winAsset =
+						assets.find((a) => /setup\.exe$/i.test(a.name)) ||
+						assets.find((a) => /\.exe$/i.test(a.name));
+
+					if (macAsset && macBtn) {
+						macBtn.href = macAsset.browser_download_url;
+					}
+					if (winAsset && winBtn) {
+						winBtn.href = winAsset.browser_download_url;
+					}
+
+					if (statusEl) {
+						statusEl.innerHTML = `${versionLabel}: ${release.tag_name} · <a href="${releasesUrl}" target="_blank" rel="noopener noreferrer">${viewAllText}</a>`;
+					}
+				} catch (err) {
+					if (statusEl) {
+						statusEl.innerHTML = `${errorText} <a href="${releasesUrl}" target="_blank" rel="noopener noreferrer">${viewAllText}</a>`;
+					}
+				}
+			})();
+		</script>
+	)
+}
