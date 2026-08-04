@@ -13,6 +13,7 @@ const t = useTranslations(lang);
 ---
 
 <a class="app-card" href={getRelativeLocaleUrl(lang, `/${app.slug}`)}>
+	<span class="monogram" aria-hidden="true">{app.name.charAt(0)}</span>
 	<h2>
 		{app.name}
 		{app.status && <span class="badge">{t(`app.status.${app.status}`)}</span>}

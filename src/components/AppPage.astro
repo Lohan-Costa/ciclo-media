@@ -20,6 +20,7 @@ const repoUrl = `https://github.com/${app.repoOwner}/${app.repoName}`;
 		<a class="source-link" href={repoUrl} target="_blank" rel="noopener noreferrer">
 			{t('app.viewsource')} →
 		</a>
+		<span class="monogram" aria-hidden="true">{app.name.charAt(0)}</span>
 		<h1>
 			{app.name}
 			{app.status && <span class="badge">{t(`app.status.${app.status}`)}</span>}
